@@ -8,6 +8,7 @@ import Data.Text (Text)
 import qualified Data.Text as Text
 import qualified Data.Text.IO as TIO
 import Database
+import Servant.Client (ClientEnv)
 import System.Environment (getEnv)
 import Telegram.Bot.API
   ( ChatId (..),
@@ -63,18 +64,7 @@ handleAction model (Message msg) =
   model <# do
     replyText msg
 
-run :: Token -> IO ()
-run token = do
-  env <- defaultTelegramClientEnv token
+runBot :: ClientEnv -> IO ()
+runBot env = do
   putStrLn "Starting Telegram bot..."
   startBot_ echoBot env
-
-getTokenStr :: IO String
-getTokenStr =
-  getEnv "FEEDBACK_BOT"
-    <|> (putStrLn "Please, enter Telegram bot's API token:" >> getLine)
-
-runBot :: IO ()
-runBot = do
-  token <- Token . Text.pack <$> getTokenStr
-  run token

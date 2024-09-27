@@ -20,9 +20,9 @@ addSubscriber newSub = action <|> TIO.writeFile fileName newSub
         Nothing -> TIO.writeFile fileName $ T.unlines $ newSub : subscribers
         Just _ -> pure ()
 
-getSubscribers :: IO [Text]
+getSubscribers :: IO [String]
 getSubscribers =
-  T.lines <$> TIO.readFile fileName
+  lines <$> readFile fileName
     <|> (createFile >> pure [])
 
 createFile :: IO ()
