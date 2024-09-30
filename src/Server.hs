@@ -8,6 +8,7 @@ module Server where
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Aeson
 import Data.Text (Text)
+import qualified Data.Text as T
 import Database (getSubscribers)
 import GHC.Generics (Generic)
 import Network.Wai
@@ -26,7 +27,7 @@ data Feedback = Feedback
 instance FromJSON Feedback
 
 feedbackToMessage :: Feedback -> Text
-feedbackToMessage (Feedback e t) = mconcat [e, t]
+feedbackToMessage (Feedback e t) = T.unlines [e, t]
 
 sendMessageOneSubscriber :: ClientEnv -> Text -> String -> IO ()
 sendMessageOneSubscriber env msg chatId = do
