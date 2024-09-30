@@ -7,22 +7,26 @@ module Server where
 
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Aeson
-import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import Database (getSubscribers)
 import GHC.Generics (Generic)
+import Network.Wai
 import Network.Wai.Handler.Warp
+import Network.Wai.Middleware.Cors
 import Servant
-import Servant.Client
+import Servant.Client (ClientEnv, runClientM)
 import Telegram.Bot.API (ChatId (..), SomeChatId (..), defSendMessage, sendMessage)
 
 data Feedback = Feedback
   { email :: Text,
-    text :: Text
+    message :: Text
   }
   deriving (Generic, Show)
 
 instance FromJSON Feedback
+
+feedbackToMessage :: Feedback -> Text
+feedbackToMessage (Feedback e t) = mconcat [e, t]
 
 sendMessageOneSubscriber :: ClientEnv -> Text -> String -> IO ()
 sendMessageOneSubscriber env msg chatId = do
@@ -33,16 +37,29 @@ sendMessageOneSubscriber env msg chatId = do
   pure ()
 
 server :: ClientEnv -> Server API
-server env maybeMsg = do
-  liftIO $ do
-    subscribers <- getSubscribers
-    mapM_ (sendMessageOneSubscriber env $ fromMaybe "" maybeMsg) subscribers
-  pure True
+server env = distribution
+  where
+    distribution :: Feedback -> Handler Bool
+    distribution f = do
+      liftIO $ do
+        subscribers <- getSubscribers
+        mapM_ (sendMessageOneSubscriber env $ feedbackToMessage f) subscribers
+      pure True
 
-type API = "feedback" :> QueryParam "name" Text :> Get '[JSON] Bool
+type API = "feedback" :> ReqBody '[JSON] Feedback :> Post '[JSON] Bool
+
+middleware :: Middleware
+middleware =
+  cors $
+    const $
+      Just
+        simpleCorsResourcePolicy
+          { corsRequestHeaders = ["Content-Type"],
+            corsMethods = ["GET", "POST"]
+          }
 
 app :: ClientEnv -> Application
-app env = serve (Proxy :: Proxy API) $ server env
+app env = middleware $ serve (Proxy :: Proxy API) $ server env
 
 runServer :: ClientEnv -> IO ()
 runServer env = putStrLn "Server started" >> run 8080 (app env)
