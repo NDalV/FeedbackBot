@@ -1,0 +1,55 @@
+cabal-version:   3.0
+name:            feedback-bot
+version:         0.1.0.0
+
+-- synopsis:
+-- description:
+license:         BSD-2-Clause
+license-file:    LICENSE
+author:          DeniLark
+maintainer:      denlarsites@gmail.com
+
+-- copyright:
+build-type:      Simple
+extra-doc-files: CHANGELOG.md
+
+-- extra-source-files:
+
+common general
+  ghc-options:   -Wall
+  build-depends:
+    , aeson
+    , async
+    , base                 ^>=4.17.2.1
+    , servant
+    , servant-client
+    , servant-server
+    , telegram-bot-api
+    , telegram-bot-simple
+    , text
+    , wai
+    , wai-cors
+    , warp
+
+library
+  import:           general
+  exposed-modules:
+    Bot
+    Database
+    Server
+
+  -- other-modules:
+  -- other-extensions:
+  hs-source-dirs:   src
+  default-language: Haskell2010
+
+executable feedback-bot
+  import:           general
+  ghc-options:      -threaded -rtsopts
+  main-is:          Main.hs
+
+  -- other-modules:
+  -- other-extensions:
+  build-depends:    feedback-bot
+  hs-source-dirs:   app
+  default-language: Haskell2010
