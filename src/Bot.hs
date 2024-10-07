@@ -9,7 +9,6 @@ import qualified Data.Text as Text
 import qualified Data.Text.IO as TIO
 import Database
 import Servant.Client (ClientEnv)
-import System.Environment (getEnv)
 import Telegram.Bot.API
   ( ChatId (..),
     Token (..),
@@ -42,13 +41,13 @@ echoBot =
       botJobs = []
     }
 
-maybeChatIdToText :: Maybe ChatId -> Text
-maybeChatIdToText = maybe "" $ \(ChatId c) -> Text.pack $ show c
+maybeChatIdToText :: Maybe Telegram.Bot.API.ChatId -> Text
+maybeChatIdToText = maybe "" $ \(Telegram.Bot.API.ChatId c) -> Text.pack $ show c
 
-updateToAction :: Model -> Update -> Maybe Action
+updateToAction :: Model -> Telegram.Bot.API.Update -> Maybe Action
 updateToAction _ update =
   parseUpdate
-    ( SaveChatId (maybeChatIdToText $ updateChatId update) <$ command "start"
+    ( SaveChatId (maybeChatIdToText $ Telegram.Bot.API.updateChatId update) <$ command "start"
         <|> Message <$> text
     )
     update

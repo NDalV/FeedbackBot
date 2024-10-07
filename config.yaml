@@ -1,0 +1,11 @@
+port: 8080
+subscribers:
+  - sites:
+      - http://localhost:5173
+    channels:
+      - "@chatdeni1"
+
+  - channels:
+      - "@chatdeni2"
+    sites:
+      - http://localhost:5174

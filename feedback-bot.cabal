@@ -30,6 +30,7 @@ common general
     , wai
     , wai-cors
     , warp
+    , yaml
 
 library
   import:           general
@@ -37,6 +38,8 @@ library
     Bot
     Database
     Server
+    Config
+    Subscriber
 
   -- other-modules:
   -- other-extensions:

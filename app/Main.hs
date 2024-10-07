@@ -1,6 +1,7 @@
 module Main where
 
 import Bot (runBot)
+import Config (Config (configSubscribers), getConfig)
 import Control.Applicative ((<|>))
 import Control.Concurrent.Async (Concurrently (..))
 import Data.Text (pack)
@@ -11,10 +12,18 @@ import Telegram.Bot.API (Token (Token), defaultTelegramClientEnv)
 
 main :: IO ()
 main = do
-  telegramEnv <- initClientEnv
-  runConcurrently $
-    Concurrently (runBot telegramEnv)
-      <|> Concurrently (runServer telegramEnv)
+  ec <- getConfig
+
+  case ec of
+    Left e -> print e
+    Right config -> do
+      let subscribers = configSubscribers config
+      telegramEnv <- initClientEnv
+      runServer telegramEnv subscribers
+
+-- runConcurrently $
+--   Concurrently (runBot telegramEnv)
+--     <|> Concurrently (runServer telegramEnv)
 
 initClientEnv :: IO ClientEnv
 initClientEnv = do
