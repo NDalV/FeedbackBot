@@ -5,13 +5,12 @@
 
 module Server where
 
-import Config
+-- import Config
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Aeson
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
-import Database (getSubscribers)
 import GHC.Generics (Generic)
 import Network.Wai
 import Network.Wai.Handler.Warp
@@ -19,7 +18,7 @@ import Network.Wai.Middleware.Cors
 import Servant
 import Servant.Client (ClientEnv, runClientM)
 import Subscriber hiding (channels)
-import Telegram.Bot.API (ChatId (..), SomeChatId (..), defSendMessage, sendMessage)
+import Telegram.Bot.API (SomeChatId (..), defSendMessage, sendMessage)
 
 data Feedback = Feedback
   { email :: Text,
@@ -49,7 +48,6 @@ server env subscribers = distribution
         print maybeOrigin
         let channels = sitesToChannels (fromMaybe "" maybeOrigin) subscribers
         mapM_ (sendMessageOneSubscriber env $ feedbackToMessage f) channels
-      -- mapM_ (sendMessageOneSubscriber env $ feedbackToMessage f) subscribers
       pure True
 
 type API =

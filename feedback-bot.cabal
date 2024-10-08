@@ -35,8 +35,6 @@ common general
 library
   import:           general
   exposed-modules:
-    Bot
-    Database
     Server
     Config
     Subscriber
