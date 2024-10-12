@@ -20,7 +20,7 @@ common general
   build-depends:
     , aeson
     , async
-    , base                 ^>=4.17.2.1
+    , base                 >=4.17.2.1
     , servant
     , servant-client
     , servant-server
@@ -35,8 +35,8 @@ common general
 library
   import:           general
   exposed-modules:
-    Server
     Config
+    Server
     Subscriber
 
   -- other-modules:
