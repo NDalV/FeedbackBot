@@ -44,6 +44,7 @@ library
     Logging
     Server
     Subscriber
+    TelegramClientEnv
 
   -- other-modules:
   -- other-extensions:
