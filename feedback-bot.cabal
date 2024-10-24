@@ -16,11 +16,16 @@ extra-doc-files: CHANGELOG.md
 -- extra-source-files:
 
 common general
-  ghc-options:   -Wall
+  ghc-options:        -Wall
+  default-extensions: OverloadedStrings
   build-depends:
     , aeson
     , async
     , base                 >=4.17.2.1
+    , chronos
+    , co-log
+    , co-log-core
+    , co-log-json
     , servant
     , servant-client
     , servant-server
@@ -36,6 +41,7 @@ library
   import:           general
   exposed-modules:
     Config
+    Logging
     Server
     Subscriber
 
