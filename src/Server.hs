@@ -21,7 +21,9 @@ import Subscriber hiding (channels)
 import Telegram.Bot.API (SomeChatId (..), defSendMessage, sendMessage)
 
 data Feedback = Feedback
-    { email :: Text
+    { name :: Text
+    , phone :: Text
+    , email :: Maybe Text
     , message :: Text
     }
     deriving (Generic, Show)
@@ -29,7 +31,7 @@ data Feedback = Feedback
 instance FromJSON Feedback
 
 feedbackToMessage :: Feedback -> Text
-feedbackToMessage (Feedback e t) = T.unlines [e, t]
+feedbackToMessage (Feedback n p e t) = T.unlines [n, p, fromMaybe "" e, t]
 
 sendMessageOneSubscriber :: ClientEnv -> Text -> String -> IO ()
 sendMessageOneSubscriber env msg chatId = do
