@@ -26,4 +26,4 @@ instance FromJSON Config where
         }
 
 getConfig :: IO (Either ParseException Config)
-getConfig = decodeFileEither "config.yaml"
+getConfig = decodeFileEither "/opt/config.yaml"
