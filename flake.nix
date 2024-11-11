@@ -1,5 +1,5 @@
 {
-  description = "Adfox overlay";
+  description = "FeedBot's flake";
 
   outputs = inputs @ {
     self,
