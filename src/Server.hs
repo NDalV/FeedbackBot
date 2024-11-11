@@ -42,7 +42,7 @@ sendMessageOneSubscriber env msg chatId = do
     pure ()
 
 server :: ClientEnv -> [Subscriber] -> Server API
-server env subscribers = distribution
+server env subscribers = pure True :<|> distribution
   where
     distribution :: Maybe String -> Feedback -> Handler Bool
     distribution maybeOrigin f = do
@@ -51,14 +51,19 @@ server env subscribers = distribution
             -- по хорошему все что шлет аппликуха в stdout должно быть определенным образом форматированными json-ами, чтобы потом можно было разобрать
             -- это в каком нибудь elastic search или в куберских дашбордах по логам приложения
             let channels = sitesToChannels (fromMaybe "" maybeOrigin) subscribers
+            print channels
             mapM_ (sendMessageOneSubscriber env $ feedbackToMessage f) channels
         pure True
 
-type API =
+type APIFeedback =
     "feedback"
         :> Header "origin" String -- TODO: почему заголовок? Причем заголовок, который зарезервирован в стандарте под другое. Лучше добавить поле в Feedback. Заодно Maybe уберешь.
         :> ReqBody '[JSON] Feedback
         :> Post '[JSON] Bool
+
+type API =
+    "test" :> Get '[JSON] Bool
+        :<|> APIFeedback
 
 middleware :: Middleware
 middleware =
@@ -79,5 +84,7 @@ middleware =
 app :: ClientEnv -> [Subscriber] -> Application
 app env = middleware . serve (Proxy :: Proxy API) . server env
 
-runServer :: ClientEnv -> [Subscriber] -> IO ()
-runServer env ss = putStrLn "Server started" >> run 8085 (app env ss) -- TODO: утащить порт в конфиг
+runServer :: Int -> ClientEnv -> [Subscriber] -> IO ()
+runServer port env ss = do
+    putStrLn $ "Server started:" <> show port
+    run port (app env ss) -- TODO: утащить порт в конфиг
