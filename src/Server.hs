@@ -80,4 +80,4 @@ app :: ClientEnv -> [Subscriber] -> Application
 app env = middleware . serve (Proxy :: Proxy API) . server env
 
 runServer :: ClientEnv -> [Subscriber] -> IO ()
-runServer env ss = putStrLn "Server started" >> run 8085 (app env ss) -- TODO: утащить порт в конфиг
+runServer env ss = putStrLn "Server started" >> run 80 (app env ss) -- TODO: утащить порт в конфиг
